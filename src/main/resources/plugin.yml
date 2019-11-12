@@ -1,0 +1,6 @@
+name: ${plugin.name}
+version: ${plugin.version}
+main: ${plugin.main}
+description: ${plugin.description}
+author: ${plguin.author}
+website: ${plugin.website}
