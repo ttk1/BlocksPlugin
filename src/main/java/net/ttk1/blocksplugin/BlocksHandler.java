@@ -3,6 +3,7 @@ package net.ttk1.blocksplugin;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -28,16 +29,36 @@ public class BlocksHandler extends AbstractHandler {
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter writer = response.getWriter();
 
-        // chunkデータの送信
-        World world = plugin.getServer().getWorld("world");
+        // worldの選択
+        String worldName = request.getParameter("world_name");
+        if (worldName == null) {
+            writer.println("[]");
+            response.setStatus(HttpStatus.NOT_FOUND_404);
+            baseRequest.setHandled(true);
+            return;
+        }
+        World world = plugin.getServer().getWorld(worldName);
         if (world == null) {
-            writer.println("{}");
+            writer.println("[]");
+            response.setStatus(HttpStatus.NOT_FOUND_404);
             baseRequest.setHandled(true);
             return;
         }
 
-        Chunk chunk = world.getChunkAt(0, 0);
+        // chunkの選択
+        Chunk chunk;
+        try {
+            int x = Integer.parseInt(request.getParameter("x"));
+            int z = Integer.parseInt(request.getParameter("z"));
+            chunk = world.getChunkAt(x, z);
+        } catch (NumberFormatException e) {
+            writer.println("[]");
+            response.setStatus(HttpStatus.NOT_FOUND_404);
+            baseRequest.setHandled(true);
+            return;
+        }
 
+        // ブロックデータ抽出
         writer.print("[");
         for (int x = 0; x < 16; x++) {
             writer.print("[");
@@ -61,6 +82,7 @@ public class BlocksHandler extends AbstractHandler {
             }
         }
         writer.print("]");
+        response.setStatus(HttpStatus.OK_200);
         baseRequest.setHandled(true);
     }
 }
