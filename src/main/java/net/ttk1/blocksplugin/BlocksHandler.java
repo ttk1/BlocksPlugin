@@ -3,7 +3,6 @@ package net.ttk1.blocksplugin;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -25,23 +24,22 @@ public class BlocksHandler extends AbstractHandler {
         plugin.getLogger().info(target);
 
         // process
+        baseRequest.setHandled(true);
+        response.addHeader("Access-Control-Allow-Origin", "*");
         response.setContentType(" application/json; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter writer = response.getWriter();
 
         // worldの選択
         String worldName = request.getParameter("world_name");
         if (worldName == null) {
             writer.println("[]");
-            response.setStatus(HttpStatus.NOT_FOUND_404);
-            baseRequest.setHandled(true);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         World world = plugin.getServer().getWorld(worldName);
         if (world == null) {
             writer.println("[]");
-            response.setStatus(HttpStatus.NOT_FOUND_404);
-            baseRequest.setHandled(true);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
@@ -53,8 +51,7 @@ public class BlocksHandler extends AbstractHandler {
             chunk = world.getChunkAt(x, z);
         } catch (NumberFormatException e) {
             writer.println("[]");
-            response.setStatus(HttpStatus.NOT_FOUND_404);
-            baseRequest.setHandled(true);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
@@ -82,7 +79,7 @@ public class BlocksHandler extends AbstractHandler {
             }
         }
         writer.print("]");
-        response.setStatus(HttpStatus.OK_200);
+        response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
     }
 }
