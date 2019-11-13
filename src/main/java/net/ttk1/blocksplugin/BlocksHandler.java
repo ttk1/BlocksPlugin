@@ -63,7 +63,16 @@ public class BlocksHandler extends AbstractHandler {
                 writer.print("[");
                 for (int z = 0; z < 16; z++) {
                     Block block = chunk.getBlock(x, y, z);
-                    writer.print("\"" + block.getType() + "\"");
+                    if (!block.isEmpty() && (block.getRelative(-1, 0, 0).isEmpty() ||
+                            block.getRelative(1, 0, 0).isEmpty() ||
+                            block.getRelative(0, -1, 0).isEmpty() ||
+                            block.getRelative(0, 1, 0).isEmpty() ||
+                            block.getRelative(0, 0, -1).isEmpty() ||
+                            block.getRelative(0, 0, 1).isEmpty())) {
+                        writer.print("\"" + block.getType() + "\"");
+                    } else {
+                        writer.print("null");
+                    }
                     if (z < 15) {
                         writer.print(",");
                     }
