@@ -59,7 +59,7 @@ public class BlocksHandler extends AbstractHandler {
         writer.print("[");
         for (int x = 0; x < 16; x++) {
             writer.print("[");
-            for (int y = 0; y < 256; y++) {
+            for (int y = -64; y < 320; y++) {
                 writer.print("[");
                 for (int z = 0; z < 16; z++) {
                     Block block = chunk.getBlock(x, y, z);
@@ -78,7 +78,7 @@ public class BlocksHandler extends AbstractHandler {
                     }
                 }
                 writer.print("]");
-                if (y < 255) {
+                if (y < 319) {
                     writer.print(",");
                 }
             }
