@@ -5,6 +5,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.eclipse.jetty.server.Server;
 
 public class BlocksPlugin extends JavaPlugin {
+    private Server server;
+
     @Override
     public void onEnable() {
         getLogger().info("Hi!");
@@ -16,7 +18,7 @@ public class BlocksPlugin extends JavaPlugin {
 
         // Start JettyServer!
         getLogger().info("starting jetty server...");
-        Server server = new Server(port);
+        server = new Server(port);
         server.setHandler(new BlocksHandler(this));
         try {
             server.start();
@@ -28,6 +30,11 @@ public class BlocksPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        try {
+            server.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         getLogger().info("Bye!");
     }
 }
