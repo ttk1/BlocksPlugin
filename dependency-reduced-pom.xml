@@ -89,11 +89,12 @@
   <properties>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <plugin.author>tama@ttk1</plugin.author>
-    <java.version>12</java.version>
+    <java.version>17</java.version>
     <plugin.description>${project.description}</plugin.description>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <plugin.version>${project.version}</plugin.version>
+    <plugin.api-version>1.18</plugin.api-version>
     <plugin.website>https://github.com/ttk1/BlocksPlugin</plugin.website>
     <plugin.main>net.ttk1.blocksplugin.BlocksPlugin</plugin.main>
     <plugin.name>${project.name}</plugin.name>

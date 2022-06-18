@@ -12,12 +12,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>12</java.version>
+        <java.version>17</java.version>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <!-- プラグインの設定 -->
         <plugin.name>${project.name}</plugin.name>
         <plugin.version>${project.version}</plugin.version>
+        <plugin.api-version>1.18</plugin.api-version>
         <plugin.main>net.ttk1.blocksplugin.BlocksPlugin</plugin.main>
         <plugin.description>${project.description}</plugin.description>
         <plugin.author>tama@ttk1</plugin.author>

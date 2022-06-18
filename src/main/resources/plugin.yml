@@ -1,5 +1,6 @@
 name: ${plugin.name}
 version: ${plugin.version}
+api-version: ${plugin.api-version}
 main: ${plugin.main}
 description: ${plugin.description}
 author: ${plguin.author}

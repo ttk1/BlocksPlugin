@@ -1,10 +1,8 @@
 package net.ttk1.blocksplugin;
 
-import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -28,7 +26,7 @@ public class BlocksHandler extends AbstractHandler {
             chunk = world.getChunkAt(chunkX, chunkZ).getChunkSnapshot();
             cache.setChunk(chunk, world.getFullTime());
         }
-        return  chunk;
+        return chunk;
     }
 
     // 後で何とかする
