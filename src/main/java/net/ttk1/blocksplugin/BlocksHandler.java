@@ -3,6 +3,7 @@ package net.ttk1.blocksplugin;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -20,13 +21,29 @@ public class BlocksHandler extends AbstractHandler {
         this.cache = new ChunkCache(20, 20 * 60 * 5);
     }
 
-    private ChunkSnapshot getChunk(World world, int chunkX, int chunkZ) {
-        ChunkSnapshot chunk = cache.getChunk(world.getName(), chunkX, chunkZ, world.getFullTime());
-        if (chunk == null && world.isChunkGenerated(chunkX, chunkZ)) {
-            chunk = world.getChunkAt(chunkX, chunkZ).getChunkSnapshot();
-            cache.setChunk(chunk, world.getFullTime());
+    private synchronized ChunkSnapshot getChunk(World world, int chunkX, int chunkZ) {
+        final ChunkSnapshot[] chunk = {cache.getChunk(world.getName(), chunkX, chunkZ, world.getFullTime())};
+        if (chunk[0] == null && world.isChunkGenerated(chunkX, chunkZ)) {
+            // デッドロック防止のため、サーバースレッドに同期して実行
+            (new BukkitRunnable() {
+                @Override
+                public void run() {
+                    chunk[0] = world.getChunkAt(chunkX, chunkZ).getChunkSnapshot();
+                }
+            }).runTask(plugin);
+            // 結果が取れるまで while で回す
+            int backoff = 10;
+            while (chunk[0] == null) {
+                try {
+                    Thread.sleep(backoff);
+                } catch (InterruptedException e) {
+                    return null;
+                }
+                backoff *= 2;
+            }
+            cache.setChunk(chunk[0], world.getFullTime());
         }
-        return chunk;
+        return chunk[0];
     }
 
     // 後で何とかする
@@ -53,6 +70,9 @@ public class BlocksHandler extends AbstractHandler {
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.setContentType(" application/json; charset=utf-8");
         PrintWriter writer = response.getWriter();
+
+        // デバッグフラグ
+        Boolean debug = "true".equals(request.getParameter("debug"));
 
         // worldの選択
         String worldName = request.getParameter("world_name");
@@ -86,6 +106,8 @@ public class BlocksHandler extends AbstractHandler {
             return;
         }
 
+        plugin.getLogger().info("chunkX = " + chunkX + ", chunkZ = " + chunkZ);
+
         // ブロックデータ抽出
         writer.print("[");
         for (int x = 0; x < 16; x++) {
@@ -93,6 +115,9 @@ public class BlocksHandler extends AbstractHandler {
             for (int y = -64; y < 320; y++) {
                 writer.print("[");
                 for (int z = 0; z < 16; z++) {
+                    if (debug) {
+                        plugin.getLogger().info("x = " + x + ", y = " + y + ", z = " + z);
+                    }
                     Material blockType = chunk.getBlockType(x, y, z);
                     if (!blockType.isAir() && (getRelative(world, chunkX, chunkZ, x, y, z, -1, 0, 0) ||
                             getRelative(world, chunkX, chunkZ, x, y, z, 1, 0, 0) ||
