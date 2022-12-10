@@ -108,6 +108,53 @@ public class BlocksHandler extends AbstractHandler {
 
         plugin.getLogger().info("chunkX = " + chunkX + ", chunkZ = " + chunkZ);
 
+        writer.print("{");
+        writer.print("worldName:" + "\"" + worldName + "\",");
+        writer.print("chunkX:" + chunkX + ",");
+        writer.print("chunkZ:" + chunkZ + ",");
+        writer.print("blocks:[");
+
+        // ブロックデータ抽出
+        boolean isFirst = true;
+        for (int x = 0; x < 16; x++) {
+            for (int y = -64; y < 320; y++) {
+                for (int z = 0; z < 16; z++) {
+                    Material blockType = chunk.getBlockType(x, y, z);
+                    if (!blockType.isAir()) {
+                        boolean top = getRelative(world, chunkX, chunkZ, x, y, z, 0, 1, 0);
+                        boolean bottom = getRelative(world, chunkX, chunkZ, x, y, z, 0, -1, 0);
+                        boolean south = getRelative(world, chunkX, chunkZ, x, y, z, 0, 0, 1);
+                        boolean north = getRelative(world, chunkX, chunkZ, x, y, z, 0, 0, -1);
+                        boolean east = getRelative(world, chunkX, chunkZ, x, y, z, 1, 0, 0);
+                        boolean west = getRelative(world, chunkX, chunkZ, x, y, z, -1, 0, 0);
+                        if (top || bottom || south || north || east || west) {
+                            String face = (top ? "1" : "0") +
+                                    (bottom ? "1" : "0") +
+                                    (south ? "1" : "0") +
+                                    (north ? "1" : "0") +
+                                    (east ? "1" : "0") +
+                                    (west ? "1" : "0");
+                            if (!isFirst) {
+                                writer.print(",");
+                            }
+                            writer.print("{");
+                            writer.print("x:" + x + ",");
+                            writer.print("y:" + y + ",");
+                            writer.print("z:" + z + ",");
+                            writer.print("face:" + "\"" + face + "\",");
+                            writer.print("material:" + "\"" + blockType + "\",");
+                            writer.print("}");
+                            isFirst = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        writer.print("]");
+        writer.print("}");
+
+        /*
         // ブロックデータ抽出
         writer.print("[");
         for (int x = 0; x < 16; x++) {
@@ -144,6 +191,8 @@ public class BlocksHandler extends AbstractHandler {
             }
         }
         writer.print("]");
+        //*/
+
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
     }
