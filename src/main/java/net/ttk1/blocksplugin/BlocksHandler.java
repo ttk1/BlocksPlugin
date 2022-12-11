@@ -109,10 +109,10 @@ public class BlocksHandler extends AbstractHandler {
         plugin.getLogger().info("chunkX = " + chunkX + ", chunkZ = " + chunkZ);
 
         writer.print("{");
-        writer.print("worldName:" + "\"" + worldName + "\",");
-        writer.print("chunkX:" + chunkX + ",");
-        writer.print("chunkZ:" + chunkZ + ",");
-        writer.print("blocks:[");
+        writer.print("\"worldName\":" + "\"" + worldName + "\",");
+        writer.print("\"chunkX\":" + chunkX + ",");
+        writer.print("\"chunkZ\":" + chunkZ + ",");
+        writer.print("\"blocks\":[");
 
         // ブロックデータ抽出
         boolean isFirst = true;
@@ -138,11 +138,11 @@ public class BlocksHandler extends AbstractHandler {
                                 writer.print(",");
                             }
                             writer.print("{");
-                            writer.print("x:" + x + ",");
-                            writer.print("y:" + y + ",");
-                            writer.print("z:" + z + ",");
-                            writer.print("face:" + "\"" + face + "\",");
-                            writer.print("material:" + "\"" + blockType + "\",");
+                            writer.print("\"x\":" + x + ",");
+                            writer.print("\"y\":" + y + ",");
+                            writer.print("\"z\":" + z + ",");
+                            writer.print("\"face\":" + "\"" + face + "\",");
+                            writer.print("\"material\":" + "\"" + blockType + "\"");
                             writer.print("}");
                             isFirst = false;
                         }
